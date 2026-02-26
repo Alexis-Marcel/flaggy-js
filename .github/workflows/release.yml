@@ -2,15 +2,18 @@ name: Release
 
 on:
   push:
-    tags:
-      - 'v*'
+    branches: [main]
+
+concurrency:
+  group: release
+  cancel-in-progress: false
 
 permissions:
   id-token: write # Required for npm OIDC
   contents: write
 
 jobs:
-  publish:
+  release:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -25,13 +28,30 @@ jobs:
       - run: npm test
       - run: npm run build
 
-      # Sync package.json version with the git tag
-      - run: npm version from-git --no-git-tag-version --allow-same-version
+      - name: Bump version
+        id: version
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+
+          MSG=$(git log -1 --pretty=%B)
+          if echo "$MSG" | grep -qiE "BREAKING CHANGE|^[a-z]+(\(.+\))?!:"; then
+            BUMP=major
+          elif echo "$MSG" | grep -qiE "^feat(\(.+\))?:"; then
+            BUMP=minor
+          else
+            BUMP=patch
+          fi
+
+          npm version $BUMP -m "v%s"
+          TAG=$(git describe --tags --abbrev=0)
+          echo "tag=$TAG" >> "$GITHUB_OUTPUT"
+
+      - run: git push --follow-tags
 
       - run: npm publish --provenance --access public
 
-      # Create GitHub Release
       - name: Create GitHub Release
         env:
           GH_TOKEN: ${{ github.token }}
-        run: gh release create ${{ github.ref_name }} --generate-notes
+        run: gh release create ${{ steps.version.outputs.tag }} --generate-notes

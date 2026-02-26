@@ -19,6 +19,7 @@ jobs:
         with:
           node-version: 24
           cache: npm
+          registry-url: https://registry.npmjs.org/
 
       - run: npm ci
       - run: npm run typecheck
@@ -29,6 +30,8 @@ jobs:
       - run: npm version from-git --no-git-tag-version --allow-same-version
 
       - run: npm publish --access public --provenance
+        env:
+          NPM_CONFIG_PROVENANCE: true
 
       # Create GitHub Release
       - name: Create GitHub Release

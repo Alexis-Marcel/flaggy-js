@@ -29,9 +29,10 @@ jobs:
       # Sync package.json version with the git tag
       - run: npm version from-git --no-git-tag-version --allow-same-version
 
+      # Trusted Publishing uses OIDC — remove the token placeholder from .npmrc
+      - run: npm config delete '//registry.npmjs.org/:_authToken'
+
       - run: npm publish --access public --provenance
-        env:
-          NPM_CONFIG_PROVENANCE: true
 
       # Create GitHub Release
       - name: Create GitHub Release

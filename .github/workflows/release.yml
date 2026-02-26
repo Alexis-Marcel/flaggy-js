@@ -7,6 +7,7 @@ on:
 
 permissions:
   contents: write
+  id-token: write
 
 jobs:
   publish:
@@ -28,9 +29,7 @@ jobs:
       # Sync package.json version with the git tag
       - run: npm version from-git --no-git-tag-version --allow-same-version
 
-      - run: npm publish --access public
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+      - run: npm publish --access public --provenance
 
       # Create GitHub Release
       - name: Create GitHub Release

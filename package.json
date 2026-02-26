@@ -1,5 +1,5 @@
 {
-  "name": "@flaggy/sdk",
+  "name": "@getflaggy/sdk",
   "version": "0.1.0",
   "type": "module",
   "description": "JavaScript/React SDK for the Flaggy feature flag server",

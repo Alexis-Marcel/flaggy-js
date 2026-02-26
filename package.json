@@ -4,6 +4,10 @@
   "type": "module",
   "description": "JavaScript/React SDK for the Flaggy feature flag server",
   "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Alexis-Marcel/flaggy-js"
+  },
   "sideEffects": false,
   "exports": {
     ".": {

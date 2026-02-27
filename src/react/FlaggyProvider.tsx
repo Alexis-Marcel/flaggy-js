@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState, useMemo, type ReactNode } from 'react';
+import { useEffect, useRef, useState, type ReactNode } from 'react';
 import { FlaggyClient } from '../client';
 import { FlaggyReactContext } from './context';
 import type { FlaggyContext } from '../types';
@@ -70,18 +70,13 @@ export function FlaggyProvider({
     }
   }, [contextKey]);
 
-  const value = useMemo(
-    () =>
-      clientRef.current
-        ? { client: clientRef.current, ready, error }
-        : null,
-    [ready, error, version],
-  );
+  // version is used to force re-render when flags change via SSE
+  void version;
 
-  if (!value) return null;
+  if (!clientRef.current) return null;
 
   return (
-    <FlaggyReactContext.Provider value={value}>
+    <FlaggyReactContext.Provider value={{ client: clientRef.current, ready, error }}>
       {children}
     </FlaggyReactContext.Provider>
   );

@@ -157,22 +157,24 @@ export class FlaggyClient {
       newCache.set(flag.flag_key, flag.value);
     }
 
+    const oldCache = this.cache;
+    // Update cache BEFORE emitting so getSnapshot reads new values
+    this.cache = newCache;
+
     // Emit changes for any values that differ
     for (const [key, newValue] of newCache) {
-      const oldValue = this.cache.get(key);
+      const oldValue = oldCache.get(key);
       if (oldValue !== newValue) {
         this.emit('change', key, newValue);
       }
     }
 
     // Emit changes for keys that were removed
-    for (const key of this.cache.keys()) {
+    for (const key of oldCache.keys()) {
       if (!newCache.has(key)) {
         this.emit('change', key, undefined as unknown as FlagValue);
       }
     }
-
-    this.cache = newCache;
   }
 
   private emit(event: 'change', key: string, value: FlagValue): void;

@@ -26,7 +26,7 @@ export function FlaggyProvider({
   const clientRef = useRef<FlaggyClient | null>(null);
   const [ready, setReady] = useState(false);
   const [error, setError] = useState<Error | null>(null);
-  const [, setVersion] = useState(0);
+  const [version, setVersion] = useState(0);
 
   // Create and initialize client when serverUrl or apiKey change
   useEffect(() => {
@@ -43,7 +43,8 @@ export function FlaggyProvider({
 
     const unsubReady = client.on('ready', () => setReady(true));
     const unsubError = client.on('error', (err) => {
-      setError(err);
+      // Only set error state during init; SSE errors are transient
+      if (!client.ready) setError(err);
       onError?.(err);
     });
     const unsubChange = client.on('change', () => {
@@ -74,7 +75,7 @@ export function FlaggyProvider({
       clientRef.current
         ? { client: clientRef.current, ready, error }
         : null,
-    [ready, error],
+    [ready, error, version],
   );
 
   if (!value) return null;

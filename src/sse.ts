@@ -56,7 +56,7 @@ export class SSEManager {
       })
       .catch((err: unknown) => {
         if (this.destroyed) return;
-        if (err instanceof Error && err.name === 'AbortError') return;
+        if (this.isAbortError(err)) return;
 
         this.onError(err instanceof Error ? err : new Error(String(err)));
         this.reconnect();
@@ -108,7 +108,7 @@ export class SSEManager {
       }
     } catch (err: unknown) {
       if (this.destroyed) return;
-      if (err instanceof Error && err.name === 'AbortError') return;
+      if (this.isAbortError(err)) return;
 
       this.onError(err instanceof Error ? err : new Error(String(err)));
     } finally {
@@ -143,6 +143,14 @@ export class SSEManager {
       this.retryTimeout = null;
       this.connect();
     }, delay);
+  }
+
+  /** Safari/WebKit throws TypeError instead of AbortError when a fetch is aborted */
+  private isAbortError(err: unknown): boolean {
+    if (!(err instanceof Error)) return false;
+    if (err.name === 'AbortError') return true;
+    if (err.name === 'TypeError' && /load failed|cancelled/i.test(err.message)) return true;
+    return false;
   }
 
   private getBackoffDelay(): number {

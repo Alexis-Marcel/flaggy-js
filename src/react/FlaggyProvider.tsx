@@ -26,7 +26,6 @@ export function FlaggyProvider({
   const clientRef = useRef<FlaggyClient | null>(null);
   const [ready, setReady] = useState(false);
   const [error, setError] = useState<Error | null>(null);
-  const [version, setVersion] = useState(0);
 
   // Create and initialize client when serverUrl or apiKey change
   useEffect(() => {
@@ -47,16 +46,12 @@ export function FlaggyProvider({
       if (!client.ready) setError(err);
       onError?.(err);
     });
-    const unsubChange = client.on('change', () => {
-      setVersion((v) => v + 1);
-    });
 
     client.initialize();
 
     return () => {
       unsubReady();
       unsubError();
-      unsubChange();
       client.destroy();
       clientRef.current = null;
     };
@@ -69,9 +64,6 @@ export function FlaggyProvider({
       clientRef.current.setContext(context);
     }
   }, [contextKey]);
-
-  // version is used to force re-render when flags change via SSE
-  void version;
 
   if (!clientRef.current) return null;
 

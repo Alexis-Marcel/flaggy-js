@@ -1,6 +1,6 @@
 import { describe, it, expect, vi, afterEach } from 'vitest';
 import { SSEManager } from '../src/sse';
-import type { FlagChangeEvent } from '../src/types';
+import type { SSEEvent } from '../src/types';
 
 function createMockStream(chunks: string[]): ReadableStream<Uint8Array> {
   const encoder = new TextEncoder();
@@ -29,13 +29,13 @@ describe('SSEManager', () => {
   it('parses SSE events from stream', async () => {
     originalFetch = globalThis.fetch;
 
-    const events: FlagChangeEvent[] = [];
+    const events: SSEEvent[] = [];
 
     globalThis.fetch = vi.fn(async () => ({
       ok: true,
       body: createMockStream([
-        'event: flag_change\ndata: {"type":"flag_updated","key":"my_flag"}\n\n',
-        'event: flag_change\ndata: {"type":"flag_created","key":"new_flag"}\n\n',
+        'event: flag_updated\ndata: {"key":"my_flag","type":"boolean","enabled":true}\n\n',
+        'event: flag_created\ndata: {"key":"new_flag","type":"string"}\n\n',
       ]),
     })) as unknown as typeof fetch;
 
@@ -54,7 +54,8 @@ describe('SSEManager', () => {
     await new Promise((r) => setTimeout(r, 50));
 
     expect(events).toHaveLength(2);
-    expect(events[0]).toEqual({ type: 'flag_updated', key: 'my_flag' });
+    // SSE "event:" field overrides data's "type" field
+    expect(events[0]).toEqual({ type: 'flag_updated', key: 'my_flag', enabled: true });
     expect(events[1]).toEqual({ type: 'flag_created', key: 'new_flag' });
 
     manager.destroy();
@@ -151,14 +152,14 @@ describe('SSEManager', () => {
   it('handles chunked SSE data across multiple reads', async () => {
     originalFetch = globalThis.fetch;
 
-    const events: FlagChangeEvent[] = [];
+    const events: SSEEvent[] = [];
 
     // Split an event across two chunks
     globalThis.fetch = vi.fn(async () => ({
       ok: true,
       body: createMockStream([
-        'event: flag_change\nda',
-        'ta: {"type":"flag_updated","key":"split_flag"}\n\n',
+        'event: flag_toggled\nda',
+        'ta: {"key":"split_flag","enabled":false}\n\n',
       ]),
     })) as unknown as typeof fetch;
 
@@ -173,7 +174,7 @@ describe('SSEManager', () => {
     await new Promise((r) => setTimeout(r, 50));
 
     expect(events).toHaveLength(1);
-    expect(events[0]).toEqual({ type: 'flag_updated', key: 'split_flag' });
+    expect(events[0]).toEqual({ type: 'flag_toggled', key: 'split_flag', enabled: false });
 
     manager.destroy();
   });

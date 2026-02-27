@@ -3,9 +3,8 @@ import type {
   FlagValue,
   FlaggyContext,
   FlaggyClientOptions,
-  EvaluateResponse,
   BatchEvaluateResponse,
-  FlagChangeEvent,
+  SSEEvent,
   FlagChangeListener,
   ReadyListener,
   ErrorListener,
@@ -136,28 +135,19 @@ export class FlaggyClient {
     this.sseManager.connect();
   }
 
-  private async handleSSEEvent(event: FlagChangeEvent): Promise<void> {
-    if (event.type === 'flag_deleted') {
-      if (this.cache.has(event.key)) {
-        this.cache.delete(event.key);
-        this.emit('change', event.key, undefined as unknown as FlagValue);
-      }
-      return;
-    }
+  private async handleSSEEvent(event: SSEEvent): Promise<void> {
+    // Ignore connection confirmation
+    if (event.type === 'connected') return;
 
-    // flag_updated or flag_created — re-evaluate this flag
+    // Any flag/rule/segment change — re-evaluate all flags via batch
     try {
-      const response = await this.fetchApi<EvaluateResponse>(
-        '/api/v1/evaluate',
-        { flag_key: event.key, context: this.context },
+      const response = await this.fetchApi<BatchEvaluateResponse>(
+        '/api/v1/evaluate/batch',
+        { flags: this.flags, context: this.context },
       );
-      const oldValue = this.cache.get(event.key);
-      this.cache.set(event.key, response.value);
-      if (oldValue !== response.value) {
-        this.emit('change', event.key, response.value);
-      }
+      this.applyBatchResult(response);
     } catch {
-      // Failed to re-evaluate, keep previous cached value
+      // Failed to re-evaluate, keep previous cached values
     }
   }
 

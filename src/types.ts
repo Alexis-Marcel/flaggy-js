@@ -25,10 +25,24 @@ export interface BatchEvaluateResponse {
   results: EvaluatedFlag[];
 }
 
-/** SSE event data for flag changes */
-export interface FlagChangeEvent {
-  type: 'flag_updated' | 'flag_deleted' | 'flag_created';
-  key: string;
+/** SSE event types sent by the server */
+export type SSEEventType =
+  | 'connected'
+  | 'flag_created'
+  | 'flag_updated'
+  | 'flag_deleted'
+  | 'flag_toggled'
+  | 'rule_created'
+  | 'rule_updated'
+  | 'rule_deleted'
+  | 'segment_created'
+  | 'segment_updated'
+  | 'segment_deleted';
+
+/** SSE event data from the stream */
+export interface SSEEvent {
+  type: SSEEventType;
+  [key: string]: unknown;
 }
 
 /** Configuration for FlaggyClient */

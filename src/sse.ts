@@ -1,9 +1,9 @@
-import type { FlagChangeEvent } from './types';
+import type { SSEEvent } from './types';
 
 export interface SSEManagerOptions {
   url: string;
   apiKey: string;
-  onEvent: (event: FlagChangeEvent) => void;
+  onEvent: (event: SSEEvent) => void;
   onError: (error: Error) => void;
   retryDelay?: number;
   maxRetryDelay?: number;
@@ -17,7 +17,7 @@ export class SSEManager {
 
   private readonly url: string;
   private readonly apiKey: string;
-  private readonly onEvent: (event: FlagChangeEvent) => void;
+  private readonly onEvent: (event: SSEEvent) => void;
   private readonly onError: (error: Error) => void;
   private readonly retryDelay: number;
   private readonly maxRetryDelay: number;
@@ -123,12 +123,12 @@ export class SSEManager {
 
   private handleEvent(eventType: string, data: string): void {
     try {
-      const parsed = JSON.parse(data) as FlagChangeEvent;
-      // Use the event type from the SSE field if present, otherwise from data
-      if (eventType && !parsed.type) {
-        parsed.type = eventType as FlagChangeEvent['type'];
+      const parsed = JSON.parse(data) as Record<string, unknown>;
+      // SSE "event:" field is the authoritative event type
+      if (eventType) {
+        parsed.type = eventType;
       }
-      this.onEvent(parsed);
+      this.onEvent(parsed as SSEEvent);
     } catch {
       // Malformed event data, skip
     }

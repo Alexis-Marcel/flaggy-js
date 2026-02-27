@@ -40,6 +40,7 @@ describe('FlaggyClient', () => {
     const client = new FlaggyClient({
       serverUrl: 'https://flaggy.example.com',
       apiKey: 'flg_test',
+      flags: ['dark_mode', 'banner_text'],
       enableStreaming: false,
     });
 
@@ -65,6 +66,7 @@ describe('FlaggyClient', () => {
     const client = new FlaggyClient({
       serverUrl: 'https://flaggy.example.com',
       apiKey: 'flg_test',
+      flags: ['dark_mode', 'banner_text'],
       enableStreaming: false,
     });
 
@@ -80,6 +82,7 @@ describe('FlaggyClient', () => {
     const client = new FlaggyClient({
       serverUrl: 'https://flaggy.example.com',
       apiKey: 'flg_test',
+      flags: ['dark_mode', 'banner_text'],
       enableStreaming: false,
     });
 
@@ -99,6 +102,7 @@ describe('FlaggyClient', () => {
     const client = new FlaggyClient({
       serverUrl: 'https://flaggy.example.com',
       apiKey: 'flg_test',
+      flags: ['dark_mode', 'banner_text'],
       enableStreaming: false,
     });
 
@@ -126,6 +130,7 @@ describe('FlaggyClient', () => {
     const client = new FlaggyClient({
       serverUrl: 'https://flaggy.example.com',
       apiKey: 'flg_test',
+      flags: ['dark_mode', 'banner_text'],
       context: { user: { plan: 'pro' } },
       enableStreaming: false,
     });
@@ -136,7 +141,7 @@ describe('FlaggyClient', () => {
       'https://flaggy.example.com/api/v1/evaluate/batch',
       expect.objectContaining({
         method: 'POST',
-        body: JSON.stringify({ context: { user: { plan: 'pro' } } }),
+        body: JSON.stringify({ flags: ['dark_mode', 'banner_text'], context: { user: { plan: 'pro' } } }),
       }),
     );
 
@@ -154,6 +159,7 @@ describe('FlaggyClient', () => {
     const client = new FlaggyClient({
       serverUrl: 'https://flaggy.example.com',
       apiKey: 'flg_abc123',
+      flags: ['dark_mode', 'banner_text'],
       enableStreaming: false,
     });
 
@@ -189,6 +195,7 @@ describe('FlaggyClient', () => {
     const client = new FlaggyClient({
       serverUrl: 'https://flaggy.example.com',
       apiKey: 'flg_test',
+      flags: ['dark_mode', 'banner_text'],
       enableStreaming: false,
     });
 
@@ -214,6 +221,7 @@ describe('FlaggyClient', () => {
     const client = new FlaggyClient({
       serverUrl: 'https://flaggy.example.com',
       apiKey: 'flg_test',
+      flags: ['dark_mode', 'banner_text'],
       enableStreaming: false,
     });
 

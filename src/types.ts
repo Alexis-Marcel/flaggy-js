@@ -35,6 +35,8 @@ export interface FlagChangeEvent {
 export interface FlaggyClientOptions {
   serverUrl: string;
   apiKey: string;
+  /** List of flag keys to evaluate */
+  flags: string[];
   context?: FlaggyContext;
   /** Whether to open an SSE connection for live updates. Default: true */
   enableStreaming?: boolean;

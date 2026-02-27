@@ -6,6 +6,7 @@ import type { FlaggyContext } from '../types';
 export interface FlaggyProviderProps {
   serverUrl: string;
   apiKey: string;
+  flags: string[];
   context?: FlaggyContext;
   enableStreaming?: boolean;
   /** Called when an error occurs (init failure, SSE error, etc.) */
@@ -16,6 +17,7 @@ export interface FlaggyProviderProps {
 export function FlaggyProvider({
   serverUrl,
   apiKey,
+  flags,
   context,
   enableStreaming,
   onError,
@@ -31,6 +33,7 @@ export function FlaggyProvider({
     const client = new FlaggyClient({
       serverUrl,
       apiKey,
+      flags,
       context,
       enableStreaming,
     });

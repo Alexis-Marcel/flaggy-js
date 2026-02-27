@@ -49,6 +49,7 @@ describe('React bindings', () => {
           <FlaggyProvider
             serverUrl="https://flaggy.example.com"
             apiKey="flg_test"
+            flags={['dark_mode', 'banner', 'nonexistent', 'feature']}
             enableStreaming={false}
           >
             <TestComponent />
@@ -79,6 +80,7 @@ describe('React bindings', () => {
           <FlaggyProvider
             serverUrl="https://flaggy.example.com"
             apiKey="flg_test"
+            flags={['dark_mode', 'banner', 'nonexistent', 'feature']}
             enableStreaming={false}
           >
             <TestComponent />
@@ -108,6 +110,7 @@ describe('React bindings', () => {
           <FlaggyProvider
             serverUrl="https://flaggy.example.com"
             apiKey="flg_test"
+            flags={['dark_mode', 'banner', 'nonexistent', 'feature']}
             enableStreaming={false}
           >
             <TestComponent />
@@ -139,6 +142,7 @@ describe('React bindings', () => {
           <FlaggyProvider
             serverUrl="https://flaggy.example.com"
             apiKey="flg_test"
+            flags={['dark_mode', 'banner', 'nonexistent', 'feature']}
             enableStreaming={false}
             onError={onError}
           >
@@ -175,6 +179,7 @@ describe('React bindings', () => {
           <FlaggyProvider
             serverUrl="https://flaggy.example.com"
             apiKey="flg_test"
+            flags={['dark_mode', 'banner', 'nonexistent', 'feature']}
             enableStreaming={false}
           >
             <TestComponent />

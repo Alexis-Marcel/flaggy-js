@@ -20,6 +20,7 @@ type EventMap = {
 export class FlaggyClient {
   private readonly serverUrl: string;
   private readonly apiKey: string;
+  private readonly flags: string[];
   private readonly enableStreaming: boolean;
   private readonly sseRetryDelay: number;
   private readonly sseMaxRetryDelay: number;
@@ -44,6 +45,7 @@ export class FlaggyClient {
   constructor(options: FlaggyClientOptions) {
     this.serverUrl = options.serverUrl.replace(/\/$/, '');
     this.apiKey = options.apiKey;
+    this.flags = options.flags;
     this.context = options.context ?? {};
     this.enableStreaming = options.enableStreaming ?? true;
     this.sseRetryDelay = options.sseRetryDelay ?? 1000;
@@ -62,7 +64,7 @@ export class FlaggyClient {
     try {
       const response = await this.fetchApi<BatchEvaluateResponse>(
         '/api/v1/evaluate/batch',
-        { context: this.context },
+        { flags: this.flags, context: this.context },
       );
       this.applyBatchResult(response);
       this._ready = true;
@@ -93,7 +95,7 @@ export class FlaggyClient {
     try {
       const response = await this.fetchApi<BatchEvaluateResponse>(
         '/api/v1/evaluate/batch',
-        { context },
+        { flags: this.flags, context },
         controller.signal,
       );
       if (controller.signal.aborted) return;
